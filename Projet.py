@@ -18,3 +18,5 @@ os.chdir("/Users/niels/Desktop/Cours/M2/BigData/Projet avec l'autre qui fait com
 # lecture du fichier csv des utilisateurs
 #=======================
 df = pd.read_csv("projet malawi.csv", delimiter=",")
+
+#ok
