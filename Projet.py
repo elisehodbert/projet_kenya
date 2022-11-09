@@ -97,8 +97,8 @@ list_foyer = ["E","L","F","B","H"]
 
 nb_id_age = []
 for i in list_age:
-    rq = "MATCH (n:individu {age:'"+str(i)+"'}) RETURN count(*)"
-    df = graph.run(rq).to_data_frame()
+    rq_age = "MATCH (n:individu {age:'"+str(i)+"'}) RETURN count(*)"
+    df = graph.run(rq_age).to_data_frame()
     nb_id_age.append(df['count(*)'][0])
 print(nb_id_age)
 
@@ -110,8 +110,8 @@ plt.show()
 
 nb_id_foyer = []
 for i in list_foyer:
-    rq = "MATCH (n:individu {foyer:'"+str(i)+"'}) RETURN count(*)"
-    df = graph.run(rq).to_data_frame()
+    rq_foyer = "MATCH (n:individu {foyer:'"+str(i)+"'}) RETURN count(*)"
+    df = graph.run(rq_foyer).to_data_frame()
     nb_id_foyer.append(df['count(*)'][0])
 print(nb_id_foyer)
 
@@ -123,8 +123,8 @@ plt.show()
 
 nb_id_sexe = []
 for i in list_sexe:
-    rq = "MATCH (n:individu {sexe:'"+str(i)+"'}) RETURN count(*)"
-    df = graph.run(rq).to_data_frame()
+    rq_sexe = "MATCH (n:individu {sexe:'"+str(i)+"'}) RETURN count(*)"
+    df = graph.run(rq_sexe).to_data_frame()
     nb_id_sexe.append(df['count(*)'][0])
 print(nb_id_sexe)
 plt.bar(list_sexe,nb_id_sexe,color="black")
@@ -135,18 +135,18 @@ plt.show()
 
 # Combien d'interactions de chaque durée ?
 
-rq200 = "MATCH (n:individu) -[:Contact_200s]-> (m) RETURN n"
-rq400 = "MATCH (n:individu) -[:Contact_200_400s]-> (m) RETURN n"
-rq600 = "MATCH (n:individu)-[:Contact_400_600s]-> (m) RETURN n"
-rq800 = "MATCH (n:individu)-[:Contact_600_800s]-> (m) RETURN n"
-df = graph.run(rq200).to_data_frame()
-nb_inter200 = df.shape[0]
-df = graph.run(rq400).to_data_frame()
-nb_inter400 = df.shape[0]
-df = graph.run(rq600).to_data_frame()
-nb_inter600 = df.shape[0]
-df = graph.run(rq800).to_data_frame()
-nb_inter800 = df.shape[0]
+rq200s = "MATCH (n:individu) -[:Contact_200s]-> (m) RETURN count(*)"
+rq400s = "MATCH (n:individu) -[:Contact_200_400s]-> (m) RETURN count(*)"
+rq600s = "MATCH (n:individu)-[:Contact_400_600s]-> (m) RETURN count(*)"
+rq800s = "MATCH (n:individu)-[:Contact_600_800s]-> (m) RETURN count(*)"
+df = graph.run(rq200s).to_data_frame()
+nb_inter200 = df['count(*)'][0]
+df = graph.run(rq400s).to_data_frame()
+nb_inter400 = df['count(*)'][0]
+df = graph.run(rq600s).to_data_frame()
+nb_inter600 = df['count(*)'][0]
+df = graph.run(rq800s).to_data_frame()
+nb_inter800 = df['count(*)'][0]
 
 barWidth = 0.20
 
@@ -162,110 +162,52 @@ plt.show()
 nb_inter200_age, nb_inter400_age, nb_inter600_age, nb_inter800_age = [], [], [], []
 
 for i in list_age:
-    rq200 = "MATCH (n:individu {age:'"+str(i)+"'})-[:Contact_200s]-> (m) RETURN n"
-    rq400 = "MATCH (n:individu {age:'"+str(i)+"'})-[:Contact_200_400s]-> (m) RETURN n"
-    rq600 = "MATCH (n:individu {age:'"+str(i)+"'})-[:Contact_400_600s]-> (m) RETURN n"
-    rq800 = "MATCH (n:individu {age:'"+str(i)+"'})-[:Contact_600_800s]-> (m) RETURN n"
-    df = graph.run(rq200).to_data_frame()
-    nb_inter200_age.append(df.shape[0])
-    df = graph.run(rq400).to_data_frame()
-    nb_inter400_age.append(df.shape[0])
-    df = graph.run(rq600).to_data_frame()
-    nb_inter600_age.append(df.shape[0])
-    df = graph.run(rq800).to_data_frame()
-    nb_inter800_age.append(df.shape[0])
-
-barWidth = 0.20
+    rq200_age = "MATCH (n:individu {age:'"+str(i)+"'})-[:Contact_200s]-> (m) RETURN count(*)"
+    rq400_age = "MATCH (n:individu {age:'"+str(i)+"'})-[:Contact_200_400s]-> (m) RETURN count(*)"
+    rq600_age = "MATCH (n:individu {age:'"+str(i)+"'})-[:Contact_400_600s]-> (m) RETURN count(*)"
+    rq800_age = "MATCH (n:individu {age:'"+str(i)+"'})-[:Contact_600_800s]-> (m) RETURN count(*)"
+    df = graph.run(rq200_age).to_data_frame()
+    nb_inter200_age.append(df['count(*)'][0]/nb_id_age[i])
+    df = graph.run(rq400_age).to_data_frame()
+    nb_inter400_age.append(df['count(*)'][0]/nb_id_age[i])
+    df = graph.run(rq600_age).to_data_frame()
+    nb_inter600_age.append(df['count(*)'][0]/nb_id_age[i])
+    df = graph.run(rq800_age).to_data_frame()
+    nb_inter800_age.append(df['count(*)'][0]/nb_id_age[i])
 
 plt.bar(['Classe 0', 'Classe 1', 'Classe 2', 'Classe 3', 'Classe 4'],nb_inter200_age, color='#d9c8ae', label='- 200s')
-plt.bar(['Classe 0', 'Classe 1', 'Classe 2', 'Classe 3', 'Classe 4'],nb_inter400_age, color='#57c7e3', label='200-400s',bottom=np.array(nb_inter200_age))
-plt.bar(['Classe 0', 'Classe 1', 'Classe 2', 'Classe 3', 'Classe 4'],nb_inter600_age, color='#8ecc93', label='400-600s',bottom=np.array(nb_inter400_age)+np.array(nb_inter200_age))
-plt.bar(['Classe 0', 'Classe 1', 'Classe 2', 'Classe 3', 'Classe 4'],nb_inter800_age, color='#c990c0', label='600-800s',bottom=np.array(nb_inter600_age)+ np.array(nb_inter400_age)+np.array(nb_inter200_age))
+plt.bar(['Classe 0', 'Classe 1', 'Classe 2', 'Classe 3', 'Classe 4'],nb_inter400_age, color='#f79667', label='200-400s',bottom=np.array(nb_inter200_age))
+plt.bar(['Classe 0', 'Classe 1', 'Classe 2', 'Classe 3', 'Classe 4'],nb_inter600_age, color='#d97193', label='400-600s',bottom=np.array(nb_inter400_age)+np.array(nb_inter200_age))
+plt.bar(['Classe 0', 'Classe 1', 'Classe 2', 'Classe 3', 'Classe 4'],nb_inter800_age, color='#cb92c2', label='600-800s',bottom=np.array(nb_inter600_age)+ np.array(nb_inter400_age)+np.array(nb_inter200_age))
 
-plt.xlabel("Nombre d'interactions en fonction de la classe d'âge", fontweight='bold')
+plt.xlabel("Nombre d'interactions par personne selon la classe d'âge", fontweight='bold')
 #plt.xticks([r + barWidth for r in range(len(nb_inter200_age))], ['Classe 0', 'Classe 1', 'Classe 2', 'Classe 3', 'Classe 4'])
 
 plt.legend()
 plt.show()
 
 
-# Combien d'interactions de chaque durée par foyer ?
-
-nb_inter200_foyer = []
-nb_inter400_foyer = []
-nb_inter600_foyer = []
-nb_inter800_foyer = []
-
-for i in list_foyer:
-    rq200 = "MATCH (n:individu {foyer:'"+str(i)+"'})-[:Contact_200s]-> (m) RETURN n"
-    rq400 = "MATCH (n:individu {foyer:'"+str(i)+"'})-[:Contact_200_400s]-> (m) RETURN n"
-    rq600 = "MATCH (n:individu {foyer:'"+str(i)+"'})-[:Contact_400_600s]-> (m) RETURN n"
-    rq800 = "MATCH (n:individu {foyer:'"+str(i)+"'})-[:Contact_600_800s]-> (m) RETURN n"
-    df = graph.run(rq200).to_data_frame()
-    nb_inter200_foyer.append(df.shape[0])
-    df = graph.run(rq400).to_data_frame()
-    nb_inter400_foyer.append(df.shape[0])
-    df = graph.run(rq600).to_data_frame()
-    nb_inter600_foyer.append(df.shape[0])
-    df = graph.run(rq800).to_data_frame()
-    nb_inter800_foyer.append(df.shape[0])
-
-# Création du graphique
-barWidth = 0.20
-
-r1 = np.arange(len(nb_inter200_foyer))
-r2 = [x + barWidth for x in r1]
-r3 = [x + barWidth for x in r2]
-r4 = [x + barWidth for x in r3]
-
-plt.bar(r1, nb_inter200_foyer, color='#d9c8ae', width=barWidth, edgecolor='white', label='-200s')
-plt.bar(r2, nb_inter400_foyer, color='#57c7e3', width=barWidth, edgecolor='white', label='200-400s')
-plt.bar(r3, nb_inter600_foyer, color='#8ecc93', width=barWidth, edgecolor='white', label='400-600s')
-plt.bar(r4, nb_inter800_foyer, color='#c990c0', width=barWidth, edgecolor='white', label='600-800s')
-
-plt.xlabel("Nombre d'interactions en fonction du foyer", fontweight='bold')
-plt.xticks([r + barWidth for r in range(len(nb_inter200_foyer))], ["Foyer E","Foyer L","Foyer F","Foyer B","Foyer H"])
-
-plt.legend()
-plt.show()
-
-# Quel individu a le plus d'interactions inter ? le plus d'interactions intra ?
-
-rq = "MATCH (n:individu) -[:Contact_200s]-> (m) RETURN n.id, n.sexe, n.age, n.foyer, count(*) ORDER BY count(*) DESC"
-df = graph.run(rq).to_data_frame()
-print("La personne ayant eu le plus d'interactions, quel que soit le type de l'interaction, est l'individu n°"+str(df['n.id'][0])+", de sexe "+str(df['n.sexe'][0])+", appartenant à la classe d'âge "+str(df['n.age'][0])+" et au foyer " +str(df['n.foyer'][0]))
-
-rq = "MATCH (n:individu) -[:Contact_200s]-> (m) WHERE n.foyer <> m.foyer RETURN n.id, n.sexe, n.age, n.foyer, count(*) ORDER BY count(*) DESC"
-df = graph.run(rq).to_data_frame()
-print("La personne ayant eu le plus d'interactions inter-foyer est l'individu n°"+str(df['n.id'][0])+", de sexe "+str(df['n.sexe'][0])+", appartenant à la classe d'âge "+str(df['n.age'][0])+" et au foyer " +str(df['n.foyer'][0]))
-
-rq = "MATCH (n:individu) -[:Contact_200s]-> (m) WHERE n.foyer = m.foyer RETURN  n.id, n.sexe, n.age, n.foyer, count(*) ORDER BY count(*) DESC"
-df = graph.run(rq).to_data_frame()
-print("La personne ayant eu le plus d'interactions intra-foyer est l'individu n°"+str(df['n.id'][0])+", de sexe "+str(df['n.sexe'][0])+", appartenant à la classe d'âge "+str(df['n.age'][0])+" et au foyer " +str(df['n.foyer'][0]))
-
-
-
 # Combien d'interactions inter-foyer par classe d'âge ?
 
 rq0_inter = "MATCH (n:individu {age:'0'})-[:Contact_200s | Contact_200_400s | Contact_400_600s | Contact_600_800s] -> (m) WHERE n.foyer <> m.foyer RETURN count(*)"
 df = graph.run(rq0_inter).to_data_frame()
-nb_inter_age0 = df['count(*)'][0]
+nb_inter_age0 = df['count(*)'][0]/nb_id_age[0]
     
 rq1_inter = "MATCH (n:individu {age:'1'})-[:Contact_200s | Contact_200_400s | Contact_400_600s | Contact_600_800s] -> (m) WHERE n.foyer <> m.foyer RETURN count(*)"
 df = graph.run(rq1_inter).to_data_frame()
-nb_inter_age1 = df['count(*)'][0]
+nb_inter_age1 = df['count(*)'][0]/nb_id_age[1]
 
 rq2_inter = "MATCH (n:individu {age:'2'})-[:Contact_200s | Contact_200_400s | Contact_400_600s | Contact_600_800s] -> (m) WHERE n.foyer <> m.foyer RETURN count(*)"
 df = graph.run(rq2_inter).to_data_frame()
-nb_inter_age2 = df['count(*)'][0]
+nb_inter_age2 = df['count(*)'][0]/nb_id_age[2]
 
 rq3_inter = "MATCH (n:individu {age:'3'})-[:Contact_200s | Contact_200_400s | Contact_400_600s | Contact_600_800s] -> (m) WHERE n.foyer <> m.foyer RETURN count(*)"
 df = graph.run(rq3_inter).to_data_frame()
-nb_inter_age3 = df['count(*)'][0]
+nb_inter_age3 = df['count(*)'][0]/nb_id_age[3]
 
 rq4_inter = "MATCH (n:individu {age:'4'})-[:Contact_200s | Contact_200_400s | Contact_400_600s | Contact_600_800s] -> (m) WHERE n.foyer <> m.foyer RETURN count(*)"
 df = graph.run(rq4_inter).to_data_frame()
-nb_inter_age4 = df['count(*)'][0]
+nb_inter_age4 = df['count(*)'][0]/nb_id_age[4]
 
 
 plt.figure(figsize = (8, 8))
@@ -273,30 +215,30 @@ plt.pie([nb_inter_age0, nb_inter_age1, nb_inter_age2, nb_inter_age3, nb_inter_ag
         labels = ['Classe 0', 'Classe 1', 'Classe 2', 'Classe 3','Classe 4'], 
         labeldistance = 0.6,
         normalize = True)
-plt.xlabel("Répartition des interactions inter-foyer par classe d'âge",fontweight="bold")
+plt.xlabel("Nombre d'interactions inter-foyer par personne selon la classe d'âge",fontweight="bold")
 plt.legend() 
 
 # Combien d'interactions intra-foyer par classe d'âge ?
 
 rq0_intra = "MATCH (n:individu {age:'0'})-[:Contact_200s | Contact_200_400s | Contact_400_600s | Contact_600_800s] -> (m) WHERE n.foyer = m.foyer RETURN count(*)"
 df = graph.run(rq0_intra).to_data_frame()
-nb_intra_age0 = df['count(*)'][0]
+nb_intra_age0 = df['count(*)'][0]/nb_id_age[0]
     
 rq1_intra = "MATCH (n:individu {age:'1'})-[:Contact_200s | Contact_200_400s | Contact_400_600s | Contact_600_800s] -> (m) WHERE n.foyer = m.foyer RETURN count(*)"
 df = graph.run(rq1_intra).to_data_frame()
-nb_intra_age1 = df['count(*)'][0]
+nb_intra_age1 = df['count(*)'][0]/nb_id_age[1]
 
 rq2_intra = "MATCH (n:individu {age:'2'})-[:Contact_200s | Contact_200_400s | Contact_400_600s | Contact_600_800s] -> (m) WHERE n.foyer = m.foyer RETURN count(*)"
 df = graph.run(rq2_intra).to_data_frame()
-nb_intra_age2 = df['count(*)'][0]
+nb_intra_age2 = df['count(*)'][0]/nb_id_age[2]
 
 rq3_intra = "MATCH (n:individu {age:'3'})-[:Contact_200s | Contact_200_400s | Contact_400_600s | Contact_600_800s] -> (m) WHERE n.foyer = m.foyer RETURN count(*)"
 df = graph.run(rq3_intra).to_data_frame()
-nb_intra_age3 = df['count(*)'][0]
+nb_intra_age3 = df['count(*)'][0]/nb_id_age[3]
 
 rq4_intra = "MATCH (n:individu {age:'4'})-[:Contact_200s | Contact_200_400s | Contact_400_600s | Contact_600_800s] -> (m) WHERE n.foyer = m.foyer RETURN count(*)"
 df = graph.run(rq4_intra).to_data_frame()
-nb_intra_age4 = df['count(*)'][0]
+nb_intra_age4 = df['count(*)'][0]/nb_id_age[4]
 
 
 
@@ -305,24 +247,96 @@ plt.pie([nb_intra_age0, nb_intra_age1, nb_intra_age2, nb_intra_age3, nb_intra_ag
         labels = ['Classe 0', 'Classe 1', 'Classe 2', 'Classe 3','Classe 4'], 
         labeldistance = 0.6,
         normalize = True)
-plt.xlabel("Répartition des interactions intra-foyer par classe d'âge",fontweight="bold")
+plt.xlabel("Nombre d'interactions intra-foyer par personne selon la classe d'âge",fontweight="bold")
 plt.legend() 
 
 # Camembert de la répartition des interactions inter et intra par durée d'interaction
 
-rq200_intra = "MATCH (n:individu {age:'0'})-[:Contact_200_400s] -> (m) WHERE n.foyer = m.foyer RETURN count(*)"
+# rq0_intra = "MATCH (n:individu)-[:Contact_200s] -> (m) WHERE n.foyer = m.foyer RETURN count(*)"
+# df = graph.run(rq0_intra).to_data_frame()
+# nb_intra_0 = df['count(*)'][0]
+
+# rq0_inter = "MATCH (n:individu)-[:Contact_200s] -> (m) WHERE n.foyer <> m.foyer RETURN count(*)"
+# df = graph.run(rq0_inter).to_data_frame()
+# nb_inter_0 = df['count(*)'][0]
+
+# plt.figure(figsize = (8, 8))
+# plt.pie([nb_intra_0, nb_inter_0], 
+#         labels = ['Contact intra-foyer', 'Contact inter-foyer'], 
+#         labeldistance = 0.6,
+#         normalize = True,
+#         colors=["mediumpurple","pink"])
+# plt.xlabel("Proportions d'interactions intra-foyer et inter-foyer pour des contacts de -200s",fontweight="bold")
+# plt.legend() 
+
+
+
+rq200_intra = "MATCH (n:individu)-[:Contact_200_400s] -> (m) WHERE n.foyer = m.foyer RETURN count(*)"
 df = graph.run(rq200_intra).to_data_frame()
 nb_intra_200 = df['count(*)'][0]
 
-rq200_inter = "MATCH (n:individu {age:'0'})-[:Contact_200_400s] -> (m) WHERE n.foyer <> m.foyer RETURN count(*)"
+rq200_inter = "MATCH (n:individu)-[:Contact_200_400s] -> (m) WHERE n.foyer <> m.foyer RETURN count(*)"
 df = graph.run(rq200_inter).to_data_frame()
 nb_inter_200 = df['count(*)'][0]
 
 plt.figure(figsize = (8, 8))
 plt.pie([nb_intra_200, nb_inter_200], 
-        labels = ['Intra-foyer', 'Inter-foyer'], 
+        labels = ['Contact intra-foyer', 'Contact inter-foyer'], 
         labeldistance = 0.6,
         normalize = True,
         colors=["mediumpurple","pink"])
 plt.xlabel("Proportions d'interactions intra-foyer et inter-foyer pour la durée 200-400s",fontweight="bold")
 plt.legend() 
+
+
+
+# rq400_intra = "MATCH (n:individu)-[:Contact_400_600s] -> (m) WHERE n.foyer = m.foyer RETURN count(*)"
+# df = graph.run(rq400_intra).to_data_frame()
+# nb_intra_400 = df['count(*)'][0]
+
+# rq400_inter = "MATCH (n:individu)-[:Contact_400_600s] -> (m) WHERE n.foyer <> m.foyer RETURN count(*)"
+# df = graph.run(rq400_inter).to_data_frame()
+# nb_inter_400 = df['count(*)'][0]
+
+# plt.figure(figsize = (8, 8))
+# plt.pie([nb_intra_400, nb_inter_400], 
+#         labels = ['Contact intra-foyer', 'Contact inter-foyer'], 
+#         labeldistance = 0.6,
+#         normalize = True,
+#         colors=["mediumpurple","pink"])X
+# plt.xlabel("Proportions d'interactions intra-foyer et inter-foyer pour la durée 400-600s",fontweight="bold")
+# plt.legend() 
+
+
+
+# rq600_intra = "MATCH (n:individu)-[:Contact_600_800s] -> (m) WHERE n.foyer = m.foyer RETURN count(*)"
+# df = graph.run(rq600_intra).to_data_frame()
+# nb_intra_600 = df['count(*)'][0]
+
+# rq600_inter = "MATCH (n:individu)-[:Contact_600_800s] -> (m) WHERE n.foyer <> m.foyer RETURN count(*)"
+# df = graph.run(rq600_inter).to_data_frame()
+# nb_inter_600 = df['count(*)'][0]
+
+# plt.figure(figsize = (8, 8))
+# plt.pie([nb_intra_600, nb_inter_600], 
+#         labels = ['Contact intra-foyer', 'Contact inter-foyer'], 
+#         labeldistance = 0.6,
+#         normalize = True,
+#         colors=["mediumpurple","pink"])
+# plt.xlabel("Proportions d'interactions intra-foyer et inter-foyer pour la durée 600-800s",fontweight="bold")
+# plt.legend() 
+
+# Quel individu a le plus d'interactions inter ? le plus d'interactions intra ?
+
+rq_all = "MATCH (n:individu) -[:Contact_200s | Contact_200_400s | Contact_400_600s | Contact_600_800s]-> (m) RETURN n.id, n.sexe, n.age, n.foyer, count(*) ORDER BY count(*) DESC LIMIT 1"
+df = graph.run(rq_all).to_data_frame()
+print("La personne ayant eu le plus d'interactions, quel que soit le type de l'interaction, est l'individu n°"+str(df['n.id'][0])+", de sexe "+str(df['n.sexe'][0])+", appartenant à la classe d'âge "+str(df['n.age'][0])+" et au foyer " +str(df['n.foyer'][0]))
+
+rq_inter = "MATCH (n:individu) -[:Contact_200s | Contact_200_400s | Contact_400_600s | Contact_600_800s]-> (m) WHERE n.foyer <> m.foyer RETURN n.id, n.sexe, n.age, n.foyer, count(*) ORDER BY count(*) DESC LIMIT 1"
+df = graph.run(rq_inter).to_data_frame()
+print("La personne ayant eu le plus d'interactions inter-foyer est l'individu n°"+str(df['n.id'][0])+", de sexe "+str(df['n.sexe'][0])+", appartenant à la classe d'âge "+str(df['n.age'][0])+" et au foyer " +str(df['n.foyer'][0]))
+
+rq_intra = "MATCH (n:individu) -[:Contact_200s | Contact_200_400s | Contact_400_600s | Contact_600_800s]-> (m) WHERE n.foyer = m.foyer RETURN  n.id, n.sexe, n.age, n.foyer, count(*) ORDER BY count(*) DESC LIMIT 1"
+df = graph.run(rq_intra).to_data_frame()
+print("La personne ayant eu le plus d'interactions intra-foyer est l'individu n°"+str(df['n.id'][0])+", de sexe "+str(df['n.sexe'][0])+", appartenant à la classe d'âge "+str(df['n.age'][0])+" et au foyer " +str(df['n.foyer'][0]))
+
