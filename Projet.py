@@ -8,87 +8,84 @@ import numpy as np
 ##############################################################################
 ################## Bien changer le FILEPATH et le password ###################
 ##############################################################################
+
 FILEPATH = "/Users/niels/Downloads"
 password = "4691"
 
-# Connexion au graphe
-graph = Graph("bolt://localhost:7687", auth=("neo4j", password))
-
-# Nettoyage avant de commencer
-graph.run("MATCH (n) OPTIONAL MATCH (n)-[r]-() DELETE n,r")
-
-# Setting working directory
-os.chdir(FILEPATH)
 
 ##############################################################################
 ############################ CREATION DES NOEUDS #############################
 ##############################################################################
 
-# Lecture du fichier csv des individus
 
-df = pd.read_csv("individus.csv", delimiter=";")
-individus = {}
-for index, row in df.iterrows():
-    individus[row["id"]] = Node("individu",
-                                id=str(row["id"]),
-                                foyer=str(row["foyer"]),
-                                age=str(row["age"]),
-                                sexe=str(row["sexe"]))
+def structureGraph(graph):
+    # Lecture du fichier csv des individus
     
-foyers = {}
-for index, row in df.iterrows():
-    foyers[row["foyer"]] = Node("foyer",
-                                foyer=str(row["foyer"]))
-    
+    df = pd.read_csv("individus.csv", delimiter=";")
+    individus = {}
+    for index, row in df.iterrows():
+        individus[row["id"]] = Node("individu",
+                                    id=str(row["id"]),
+                                    foyer=str(row["foyer"]),
+                                    age=str(row["age"]),
+                                    sexe=str(row["sexe"]))
         
+    foyers = {}
+    for index, row in df.iterrows():
+        foyers[row["foyer"]] = Node("foyer",
+                                    foyer=str(row["foyer"]))
         
+            
+            
 ##############################################################################
 ########################### CREATION DES RELATIONS ###########################
 ##############################################################################    
-    
-habite = []
-for index, row in df.iterrows():
-    individu = individus[row["id"]]
-    foyer = foyers[row["foyer"]]    
-    habite.append(Relationship(individu,"Habite", foyer))
-    
-df = pd.read_csv("relations.csv", delimiter=";")
-    
-contact_moins_200s = []
-contact_entre_200_et_400s = []
-contact_entre_400_et_600s = []
-contact_entre_600_et_800s = []
-    
-for index, row in df.iterrows():
-    individu1 = individus[row['id1']]
-    individu2 = individus[row['id2']]
-    if row["duree"] < 200 :
-        contact_moins_200s.append(Relationship(individu1, "Contact_200s", individu2))
-    elif row["duree"] < 400 :
-        contact_entre_200_et_400s.append(Relationship(individu1, "Contact_200_400s", individu2))
-    elif row["duree"] < 600 :
-        contact_entre_400_et_600s.append(Relationship(individu1, "Contact_400_600s", individu2))
-    else :
-        contact_entre_600_et_800s.append(Relationship(individu1, "Contact_600_800s", individu2))
+       
+     
+    habite = []
+    for index, row in df.iterrows():
+        individu = individus[row["id"]]
+        foyer = foyers[row["foyer"]]    
+        habite.append(Relationship(individu,"Habite", foyer))
         
+    # Lecture du fichier csv des relations
+    df = pd.read_csv("relations.csv", delimiter=";")
         
+    contact_moins_200s = []
+    contact_entre_200_et_400s = []
+    contact_entre_400_et_600s = []
+    contact_entre_600_et_800s = []
         
+    for index, row in df.iterrows():
+        individu1 = individus[row['id1']]
+        individu2 = individus[row['id2']]
+        if row["duree"] < 200 :
+            contact_moins_200s.append(Relationship(individu1, "Contact_200s", individu2))
+        elif row["duree"] < 400 :
+            contact_entre_200_et_400s.append(Relationship(individu1, "Contact_200_400s", individu2))
+        elif row["duree"] < 600 :
+            contact_entre_400_et_600s.append(Relationship(individu1, "Contact_400_600s", individu2))
+        else :
+            contact_entre_600_et_800s.append(Relationship(individu1, "Contact_600_800s", individu2))
+            
+            
+            
     # Création du graphe dans la base
     
-for r in contact_moins_200s:
-    graph.create(r)    
-    
-for r in contact_entre_200_et_400s:
-    graph.create(r)    
+    for r in contact_moins_200s:
+        graph.create(r)    
         
-for r in contact_entre_400_et_600s:
-    graph.create(r)    
-    
-for r in contact_entre_600_et_800s:
-    graph.create(r)    
-    
-for r in habite:
-    graph.create(r)
+    for r in contact_entre_200_et_400s:
+        graph.create(r)    
+            
+    for r in contact_entre_400_et_600s:
+        graph.create(r)    
+        
+    for r in contact_entre_600_et_800s:
+        graph.create(r)    
+        
+    for r in habite:
+        graph.create(r)
 
 
 ##############################################################################
@@ -111,7 +108,7 @@ def rq_age():
     plt.bar(list_age,nb_id_age, color='black')
     plt.xlabel("Nombre d'individus par classe d'âge", fontweight='bold')
     plt.show()
-    return nb_id_age
+    return (f' Il y a {nb_id_age[0]} individus dans la classe 0, {nb_id_age[1]} individus dans la classe 1, {nb_id_age[2]} individus dans la classe 2, {nb_id_age[3]} individus dans la classe 3 et {nb_id_age[4]} individus dans la classe 4')
 
 # Combien de personnes par classe d'âge (sans affichage graphique) ?
 
@@ -131,11 +128,11 @@ def rq_foyer():
         rq_foyer = "MATCH (n:individu {foyer:'"+str(i)+"'}) RETURN count(*)"
         df = graph.run(rq_foyer).to_data_frame()
         nb_id_foyer.append(df['count(*)'][0])
-    print(nb_id_foyer)
     
     plt.bar(list_foyer,nb_id_foyer, color="black")
     plt.xlabel("Nombre d'individus par foyer", fontweight='bold')
     plt.show()
+    return(f' Il y a {nb_id_foyer[0]} individus dans le foyer E, {nb_id_foyer[1]} individus dans le foyer L, {nb_id_foyer[2]} individus dans le foyer F, {nb_id_foyer[3]} individus dans le foyer B et {nb_id_foyer[4]} individus dans le foyer H')
 
 # Combien de personnes par sexe ?
 
@@ -145,10 +142,10 @@ def rq_sexe():
         rq_sexe = "MATCH (n:individu {sexe:'"+str(i)+"'}) RETURN count(*)"
         df = graph.run(rq_sexe).to_data_frame()
         nb_id_sexe.append(df['count(*)'][0])
-    print(nb_id_sexe)
     plt.bar(list_sexe,nb_id_sexe,color="black")
     plt.xlabel("Nombre d'individus par sexe", fontweight='bold')
     plt.show()
+    return(f'Il y a {nb_id_sexe[0]} hommes et {nb_id_sexe[1]} femmes dans le jeu de données')
 
 ## Comptage des interactions en tout (inter et intra confondues)
 
@@ -178,8 +175,6 @@ def rq_duree():
 
 
 # Combien d'interactions de chaque durée par classe d'âge ?
-
-nb_id_age = rq_age_bis()
 
 def rq_duree_age():
     nb_inter200_age, nb_inter400_age, nb_inter600_age, nb_inter800_age = [], [], [], []
@@ -311,6 +306,26 @@ def rq_plus_intra():
     df = graph.run(rq_intra).to_data_frame()
     print("La personne ayant eu le plus d'interactions intra-foyer est l'individu n°"+str(df['n.id'][0])+", de sexe "+str(df['n.sexe'][0])+", appartenant à la classe d'âge "+str(df['n.age'][0])+" et au foyer " +str(df['n.foyer'][0]))
 
+##############################################################################
+############################ FONCTION PRINCIPALE #############################
+##############################################################################
+
+def creationReseau(FILEPATH,password):
+    # Connexion au graphe
+    graph = Graph("bolt://localhost:7687", auth=("neo4j", password))
+
+    # Nettoyage avant de commencer
+    graph.run("MATCH (n) OPTIONAL MATCH (n)-[r]-() DELETE n,r")
+
+    # Setting working directory
+    os.chdir(FILEPATH)
+    structureGraph(graph)
+    return(graph)
+    
+graph = creationReseau(FILEPATH, password)
+
+## Définition du nombre de personnes par classe d'âge dans le but de comparer les classes entre elles
+nb_id_age = rq_age_bis()
 
 ##############################################################################
 ########################## LANCEMENT DES REQUÊTES ############################
