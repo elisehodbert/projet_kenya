@@ -276,24 +276,6 @@ def rq_intra_age():
 
 # Camembert de la répartition des interactions inter et intra par durée d'interaction
 
-# rq0_intra = "MATCH (n:individu)-[:Contact_200s] -> (m) WHERE n.foyer = m.foyer RETURN count(*)"
-# df = graph.run(rq0_intra).to_data_frame()
-# nb_intra_0 = df['count(*)'][0]
-
-# rq0_inter = "MATCH (n:individu)-[:Contact_200s] -> (m) WHERE n.foyer <> m.foyer RETURN count(*)"
-# df = graph.run(rq0_inter).to_data_frame()
-# nb_inter_0 = df['count(*)'][0]
-
-# plt.figure(figsize = (8, 8))
-# plt.pie([nb_intra_0, nb_inter_0], 
-#         labels = ['Contact intra-foyer', 'Contact inter-foyer'], 
-#         labeldistance = 0.6,
-#         normalize = True,
-#         colors=["mediumpurple","pink"])
-# plt.xlabel("Proportions d'interactions intra-foyer et inter-foyer pour des contacts de -200s",fontweight="bold")
-# plt.legend() 
-
-
 def  rq_intra_inter_400():
     rq200_intra = "MATCH (n:individu)-[:Contact_200_400s] -> (m) WHERE n.foyer = m.foyer RETURN count(*)"
     df = graph.run(rq200_intra).to_data_frame()
@@ -311,44 +293,6 @@ def  rq_intra_inter_400():
             colors=["mediumpurple","pink"])
     plt.xlabel("Proportions d'interactions intra-foyer et inter-foyer pour la durée 200-400s",fontweight="bold")
     plt.legend() 
-
-
-
-# rq400_intra = "MATCH (n:individu)-[:Contact_400_600s] -> (m) WHERE n.foyer = m.foyer RETURN count(*)"
-# df = graph.run(rq400_intra).to_data_frame()
-# nb_intra_400 = df['count(*)'][0]
-
-# rq400_inter = "MATCH (n:individu)-[:Contact_400_600s] -> (m) WHERE n.foyer <> m.foyer RETURN count(*)"
-# df = graph.run(rq400_inter).to_data_frame()
-# nb_inter_400 = df['count(*)'][0]
-
-# plt.figure(figsize = (8, 8))
-# plt.pie([nb_intra_400, nb_inter_400], 
-#         labels = ['Contact intra-foyer', 'Contact inter-foyer'], 
-#         labeldistance = 0.6,
-#         normalize = True,
-#         colors=["mediumpurple","pink"])X
-# plt.xlabel("Proportions d'interactions intra-foyer et inter-foyer pour la durée 400-600s",fontweight="bold")
-# plt.legend() 
-
-
-
-# rq600_intra = "MATCH (n:individu)-[:Contact_600_800s] -> (m) WHERE n.foyer = m.foyer RETURN count(*)"
-# df = graph.run(rq600_intra).to_data_frame()
-# nb_intra_600 = df['count(*)'][0]
-
-# rq600_inter = "MATCH (n:individu)-[:Contact_600_800s] -> (m) WHERE n.foyer <> m.foyer RETURN count(*)"
-# df = graph.run(rq600_inter).to_data_frame()
-# nb_inter_600 = df['count(*)'][0]
-
-# plt.figure(figsize = (8, 8))
-# plt.pie([nb_intra_600, nb_inter_600], 
-#         labels = ['Contact intra-foyer', 'Contact inter-foyer'], 
-#         labeldistance = 0.6,
-#         normalize = True,
-#         colors=["mediumpurple","pink"])
-# plt.xlabel("Proportions d'interactions intra-foyer et inter-foyer pour la durée 600-800s",fontweight="bold")
-# plt.legend() 
 
 # Quel individu a le plus d'interactions inter ? le plus d'interactions intra ?
 
